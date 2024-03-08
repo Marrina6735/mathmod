@@ -1,21 +1,45 @@
 ---
-# Front matter
-lang: ru-RU
-title: "Научное програмирование"
-subtitle: "Отчет по лабораторной работе № 5"
-author: "Коняева Марина Александровна НФИбд-01-21"
+## Front matter
+title: "Отчёт по лабораторной работе №5
 
-# Formatting
+
+Математическое моделирование"
+subtitle: "Модель хищник-жертва. Вариант №55"
+author: "Выполнила: Коняева Марина Александровна, 
+
+
+НФИбд-01-21, 1032217044"
+
+
+
+## Generic otions
+lang: ru-RU
 toc-title: "Содержание"
+
+## Bibliography
+bibliography: bib/cite.bib
+csl: pandoc/csl/gost-r-7-0-5-2008-numeric.csl
+
+## Pdf output format
 toc: true # Table of contents
-toc_depth: 2
+toc-depth: 2
 lof: true # List of figures
 fontsize: 12pt
 linestretch: 1.5
-papersize: a4paper
+papersize: a4
 documentclass: scrreprt
-polyglossia-lang: russian
-polyglossia-otherlangs: english
+## I18n polyglossia
+polyglossia-lang:
+  name: russian
+  options:
+	- spelling=modern
+	- babelshorthands=true
+polyglossia-otherlangs:
+  name: english
+## I18n babel
+babel-lang: russian
+babel-otherlangs: english
+## Fonts
 mainfont: PT Serif
 romanfont: PT Serif
 sansfont: PT Sans
@@ -23,274 +47,288 @@ monofont: PT Mono
 mainfontoptions: Ligatures=TeX
 romanfontoptions: Ligatures=TeX
 sansfontoptions: Ligatures=TeX,Scale=MatchLowercase
-monofontoptions: Scale=MatchLowercase
+monofontoptions: Scale=MatchLowercase,Scale=0.9
+## Biblatex
+biblatex: true
+biblio-style: "gost-numeric"
+biblatexoptions:
+  - parentracker=true
+  - backend=biber
+  - hyperref=auto
+  - language=auto
+  - autolang=other*
+  - citestyle=gost-numeric
+## Pandoc-crossref LaTeX customization
+figureTitle: "Рис."
+tableTitle: "Таблица"
+listingTitle: "Листинг"
+lofTitle: "Список иллюстраций"
+lolTitle: "Листинги"
+## Misc options
 indent: true
-pdf-engine: lualatex
 header-includes:
-  - \linepenalty=10 # the penalty added to the badness of each line within a paragraph (no associated penalty node) Increasing the value makes tex try to have fewer lines in the paragraph.
-  - \interlinepenalty=0 # value of the penalty (node) added after each line of a paragraph.
-  - \hyphenpenalty=50 # the penalty for line breaking at an automatically inserted hyphen
-  - \exhyphenpenalty=50 # the penalty for line breaking at an explicit hyphen
-  - \binoppenalty=700 # the penalty for breaking a line at a binary operator
-  - \relpenalty=500 # the penalty for breaking a line at a relation
-  - \clubpenalty=150 # extra penalty for breaking after first line of a paragraph
-  - \widowpenalty=150 # extra penalty for breaking before last line of a paragraph
-  - \displaywidowpenalty=50 # extra penalty for breaking before last line before a display math
-  - \brokenpenalty=100 # extra penalty for page breaking after a hyphenated line
-  - \predisplaypenalty=10000 # penalty for breaking before a display
-  - \postdisplaypenalty=0 # penalty for breaking after a display
-  - \floatingpenalty = 20000 # penalty for splitting an insertion (can only be split footnote in standard LaTeX)
-  - \raggedbottom # or \flushbottom
+  - \usepackage{indentfirst}
   - \usepackage{float} # keep figures where there are in the text
   - \floatplacement{figure}{H} # keep figures where there are in the text
 ---
 
 # Цель работы
 
-Ознакомление с некоторыми операциями в среде Octave для решения таких задач, как подгонка полиномиальной кривой, матричных преобразований, вращений, отражений и дилатаций.
+Изучить жесткую модель хищник-жертва и построить эту модель.
+
+# Теоретическое введение
+
+- Модель Лотки—Вольтерры — модель взаимодействия двух видов типа «хищник — жертва», названная в честь её авторов, которые предложили модельные уравнения независимо друг от друга. Такие уравнения можно использовать для моделирования систем «хищник — жертва», «паразит — хозяин», конкуренции и других видов взаимодействия между двумя видами. [4]
+
+Данная двувидовая модель основывается на
+следующих предположениях [4]:
+
+1. Численность популяции жертв x и хищников y зависят только от времени (модель не учитывает пространственное распределение популяции на занимаемой территории)
+
+2. В отсутствии взаимодействия численность видов изменяется по модели Мальтуса, при этом число жертв увеличивается, а число хищников падает
+
+3. Естественная смертность жертвы и естественная рождаемость хищника считаются несущественными
+
+4. Эффект насыщения численности обеих популяций не учитывается
+
+5. Скорость роста численности жертв уменьшается пропорционально численности хищников
+
+$$
+ \begin{cases}
+	\frac{dx}{dt} = (-ax(t) + by(t)x(t))
+	\\   
+	\frac{dy}{dt} = (cy(t) - dy(t)x(t))
+ \end{cases}
+$$
+
+В этой модели $x$ – число жертв, $y$ - число хищников.
+Коэффициент $a$ описывает скорость естественного прироста числа жертв в отсутствие хищников, $с$ - естественное вымирание хищников, лишенных пищи в виде жертв.
+Вероятность взаимодействия жертвы и хищника считается пропорциональной как количеству жертв, так и числу самих хищников ($xy$).
+Каждый акт взаимодействия уменьшает популяцию жертв, но способствует увеличению популяции хищников (члены $-bxy$ и $dxy$ в правой части уравнения).
+
+Математический анализ этой (жёсткой) модели показывает, что имеется стационарное состояние, всякое же другое начальное состояние приводит
+к периодическому колебанию численности как жертв, так и хищников, так что по прошествии некоторого времени такая система вернётся в изначальное состояние.
+
+Стационарное состояние системы (положение равновесия, не зависящее от времени решения) будет находиться
+в точке $x_0=\frac{c}{d}, y_0=\frac{a}{b}$. Если начальные значения задать в стационарном состоянии $x(0) = x_0, y(0) = y_0$, то в любой момент времени
+численность популяций изменяться не будет. При малом отклонении от положения равновесия численности как хищника, так и жертвы с течением времени не
+возвращаются к равновесным значениям, а совершают периодические колебания вокруг стационарной точки. Амплитуда колебаний и их период определяется
+начальными значениями численностей $x(0), y(0)$. Колебания совершаются в противофазе.
+
+# Задачи
+
+1. Построить график зависимости численности хищников от численности жертв
+
+2. Построить график зависимости численности хищников и численности жертв от времени
+
+3. Найти стационарное состояние системы
+
+# Задание
+
+Вариант 55:
+
+Для модели «хищник-жертва»:
+
+$$
+ \begin{cases}
+	\frac{dx}{dt} = -0.14x(t) + 0.041y(t)x(t)
+	\\   
+	\frac{dy}{dt} = 0.23y(t) - 0.034y(t)x(t)
+ \end{cases}
+$$
+
+Постройте график зависимости численности хищников от численности жертв, а также графики изменения численности хищников и численности жертв 
+при следующих начальных условиях: $x_0=8, y_0=21$
+Найдите стационарное состояние системы.
 
 # Выполнение лабораторной работы
 
-## Подгонка полиномиальной кривой
+## Построение математической модели. Решение с помощью программ
 
-В статистике часто рассматривается проблема подгонки прямой линии к набору данных. Решим более общую проблему подгонки полинома к множеству точек. Пусть нам нужно найти параболу по методу наименьших квадратов для набора точек, заданных матрицей  
+### Julia
 
-$$
-D =
-\left(
-\begin{array}{cc}
-1 & 1 
-\\ 
-2 & 2 
-\\
-3 & 5
-\\
-4 & 4
-\\
-5 & 2
-\\
-6 & -3
-\end{array}
-\right)
-$$
+Код программы для нестационарного состояния:
 
-В матрице заданы значения $x$ в столбце 1 и значения $y$ в столбце 2.Введём матрицу данных в Octave и извлечём вектора $x$ и $y$. А также нарусуем точки на графике.Данные операции выполнены ниже: 
+```
+using Plots
+using DifferentialEquations
 
-![Програмный код 01](image/01.PNG){ #fig:001 width=70% height=70%}
+x0 = 8
+y0 = 21
 
-![График 01](image/02.PNG){ #fig:002 width=70% height=70%}
+a = 0.14
+b = 0.041
+c = 0.23
+d = 0.034
 
-Построим уравнение вида $y = ax^2 + bx + c$. Подставляя данные,
-получаем следующую систему линейных уравнений.  
 
-$$
-\left(
-\begin{array}{ccc}
-1 & 1 & 1
-\\ 
-4 & 2 & 1
-\\
-9 & 3 & 1
-\\
-16 & 4 & 1
-\\
-25 & 5 & 1
-\\
-36 & 6 & 1
-\end{array}
-\right)
-\left(
-\begin{array}{c}
-a
-\\ 
-b
-\\
-c
-\end{array}
-\right)
-=
-\left(
-\begin{array}{c}
-1
-\\ 
-2
-\\
-5
-\\
-4
-\\
-2
-\\
--3
-\end{array}
-\right).
-$$  
+function ode_fn(du, u, p, t)
+    x, y = u
+    du[1] = -a*u[1] + b * u[1] * u[2]
+    du[2] = c * u[2] - d * u[1] * u[2]
+end
 
-Обратим внимание на форму матрицы коэффициентов $A$.Третий столбец – все единицы, второй столбец – значения $x$, а первый столбец – квадрат значений $x$.Правый вектор – это значения $y$. Есть несколько способов построить матрицу коэффициентов в Octave. Один из подходов состоит в том, чтобы использовать команду ones для создания матрицы единиц соответствующего размера, а затем перезаписать первый и второй столбцы необходимыми данными.
+v0 = [x0, y0]
+tspan = (0.0, 60.0)
+prob = ODEProblem(ode_fn, v0, tspan)
+sol = solve(prob, dtmax=0.05)
+X = [u[1] for u in sol.u]
+Y = [u[2] for u in sol.u]
+T = [t for t in sol.t]
 
-![Програмный код 02](image/03.PNG){ #fig:003 width=70% height=70%}
+plt = plot(
+  dpi=300,
+  legend=false)
 
-Решение по методу наименьших квадратов получается из решения уравнения $A^T Ab = A^T b$, где $b$ – вектор коэффициентов полинома. Используем Octave для построения уравнений, как показано ниже: 
+plot!(
+  plt,
+  X,
+  Y,
+  color=:blue)
 
-![Програмный код 03](image/04.PNG){ #fig:004 width=70% height=70%}
+savefig(plt, "out/lab05_1.png")
 
-Решим задачу методом Гаусса. Для этого запишем расширенную матрицу:
+plt2 = plot(
+  dpi=300,
+  legend=true)
 
-$$
-B =
-\left(
-\begin{array}{cccc}
-2275 & 441 & 91 & 60 
-\\ 
-441 & 91 & 21 & 28 
-\\
-91 & 21 & 6 & 11
-\end{array}
-\right).
-$$  
+plot!(
+  plt2,
+  T,
+  X,
+  label="Численность жертв",
+  color=:red)
 
-Таким образом, искомое квадратное уравнение имеет вид
+plot!(
+  plt2,
+  T,
+  Y,
+  label="Численность хищников",
+  color=:green)
 
-$$
-y = -0.89286 x^2 + 5.65 x - 4.4
-$$  
+savefig(plt2, "out/lab05_2.png")
+```
 
-![Програмный код 04](image/05.PNG){ #fig:005 width=70% height=70%}
+Код программы для стационарного состояния:
 
-![Програмный код 05](image/06.PNG){ #fig:006 width=70% height=70%}
+```
+using Plots
+using DifferentialEquations
 
-После чего построим соответствующий график параболы.
+a = 0.14
+b = 0.041
+c = 0.23
+d = 0.034
 
-![Програмный код 06](image/07.PNG){ #fig:007 width=70% height=70%}
+x0 = c / d 
+y0 = a / b 
 
-![Програмный код 07](image/08.PNG){ #fig:008 width=70% height=70%}
+function ode_fn(du, u, p, t)
+    x, y = u
+    du[1] = -a*u[1] + b * u[1] * u[2]
+    du[2] = c * u[2] - d * u[1] * u[2]
+end
 
-![График 02](image/09.PNG){ #fig:009 width=70% height=70%}
+v0 = [x0, y0]
+tspan = (0.0, 60.0)
+prob = ODEProblem(ode_fn, v0, tspan)
+sol = solve(prob, dtmax=0.05)
+X = [u[1] for u in sol.u]
+Y = [u[2] for u in sol.u]
+T = [t for t in sol.t]
 
-Процесс подгонки может быть автоматизирован встроенными функциями Octave. Для этого мы можем использовать встроенную функцию для подгонки полинома polyfit. Синтаксис: polyfit (x, y, order), где order – это степень полинома. Значения полинома P в точках, задаваемых вектором-строкой x можно получить с помощью функции polyval. Синтаксис: polyval (P, x). 
+plt2 = plot(
+  dpi=300,
+  legend=true)
 
-![Програмный код 08](image/10.PNG){ #fig:010 width=70% height=70%}
+plot!(
+  plt2,
+  T,
+  X,
+  label="Численность жертв",
+  color=:red)
 
-После чего рассчитаем значения в точках и построим исходные данные.
+plot!(
+  plt2,
+  T,
+  Y,
+  label="Численность хищников",
+  color=:green)
 
-![График 03](image/11.PNG){ #fig:011 width=70% height=70%}
+savefig(plt2, "lab05_3.png")
+```
+В стационарном состоянии решение вида $y(x)=some function$ будет представлять собой точку.
 
-## Матричные преобразования  
-Матрицы и матричные преобразования играют ключевую роль в компьютерной графике. Существует несколько способов представления изображения в виде матрицы. Подход, который мы здесь используем, состоит в том, чтобы перечислить ряд вершин, которые соединены последовательно, чтобы получить ребра простого графа. Мы записываем это как матрицу $2 \times n$, где каждый столбец представляет точку на рисунке. В качестве простого примера, давайте попробуем закодировать граф-домик. Есть много способов закодировать это как матрицу. Эффективный метод состоит в том, чтобы выбрать путь, который проходит по каждому ребру ровно один
-раз (цикл Эйлера).  
+### Результаты работы кода на Julia
 
-$$
-D =
-\left(
-\begin{array}{ccccccc}
-1 & 1 & 3 & 3 & 2 & 1 & 3
-\\ 
-2 & 0 & 0 & 2 & 3 & 2 & 2
-\end{array}
-\right).
-$$  
+![График численности хищников от численности жертв](image/1.png){ #fig:001 width=70% height=70% }
 
-![Програмный код 09](image/12.PNG){ #fig:012 width=70% height=70%}
+![График численности жертв и хищников от времени](image/2.png){ #fig:002 width=70% height=70% }
 
-![График 04](image/13.PNG){ #fig:013 width=70% height=70%}
+![Стационарное состояние](image/3.png){ #fig:003 width=70% height=70% }
 
-## Вращение 
- 
-Рассмотрим различные способы преобразования изображения. Вращения могут быть получены с использованием умножения на специальную матрицу. Вращение точки $(x, y)$ относительно начала координат определяется как  
+## OpenModelica
 
-$$
-R
-\left(
-\begin{array}{c}
-x
-\\ 
-y
-\end{array}
-\right),
-$$
+Код программы для нестационарного состояния:
 
-где
+```
+model lab05_1
+Real a = 0.14;
+Real b = 0.041;
+Real c = 0.23;
+Real d = 0.034;
+Real x;
+Real y;
+initial equation
+x = 8;
+y = 21;
+equation
+der(x) = -a*x + b*x*y;
+der(y) = c*y - d*x*y;
+end lab05_1;
+```
+Код программы для стационарного состояния:
 
-$$
-R =
-\left(
-\begin{array}{cc}
-cos(\theta) & -sin(\theta)
-\\ 
-sin(\theta) & cos(\theta)
-\end{array}
-\right),
-$$  
+```
+model lab05_2
+Real a = 0.14;
+Real b = 0.041;
+Real c = 0.23;
+Real d = 0.034;
+Real x;
+Real y;
+initial equation
+x = c / d;
+y = a / b;
+equation
+der(x) = -a*x + b*x*y;
+der(y) = c*y - d*x*y;
+end lab05_2;
+```
+В стационарном состоянии решение вида $y(x)=some function$ будет представлять собой точку.
 
-$\theta$ - угол поворота (измеренный против часовой стрелки).
+### Результаты работы кода на OpenModelica
 
-Теперь, чтобы произвести повороты матрицы данных $D$, нам нужно
-вычислить произведение матриц $RD$. Повернём граф дома на $90^{\circ}$ и $225^{\circ}$. Вначале переведём угол в радианы.  
+![График численности хищников от численности жертв](image/4.png){ #fig:004 width=70% height=70% }
 
-![Програмный код 10](image/14.PNG){ #fig:014 width=70% height=70%}
+![График численности жертв и хищников от времени](image/5.png){ #fig:005 width=70% height=70% }
 
-![Програмный код 11](image/15.PNG){ #fig:015 width=70% height=70%}
+![Стационарное состояние](image/6.png){ #fig:006 width=70% height=70% }
 
-![Програмный код 12](image/16.PNG){ #fig:016 width=70% height=70%}
+# Анализ полученных результатов. Сравнение языков.
 
-![График 05](image/17.PNG){ #fig:017 width=70% height=70%}
+В итоге проделанной работы мы построили график зависимости численности хищников от численности жертв, а также графики изменения численности хищников и численности жертв на языках Julia и OpenModelica. Построение модели хищник-жертва на языке openModelica занимает меньше строк, чем аналогичное построение на Julia.
 
-## Отражение  
+# Вывод
 
-Если $l$ – прямая, проходящая через начало координат, то отражение точки $(x, y)$ относительно прямой $l$ определяется как
+В ходе выполнения лабораторной работы была изучена модель хищник-жертва и построена модель на языках Julia и Open Modelica.
 
-$$
-R
-\left(
-\begin{array}{c}
-x
-\\ 
-y
-\end{array}
-\right),
-$$
+# Список литературы. Библиография
 
-где
+[1] Документация по Julia: https://docs.julialang.org/en/v1/
 
-$$
-R =
-\left(
-\begin{array}{cc}
-cos(2\theta) & sin(2\theta)
-\\ 
-sin(2\theta) & -cos(2\theta)
-\end{array}
-\right),
-$$
+[2] Документация по OpenModelica: https://openmodelica.org/
 
-$\theta$ - угол между прямой $l$ и осью абсцисс (измеренный против часовой стрелки).
+[3] Решение дифференциальных уравнений: https://www.wolframalpha.com/
 
-![Програмный код 13](image/18.PNG){ #fig:018 width=70% height=70%}
-
-![Програмный код 14](image/19.PNG){ #fig:019 width=70% height=70%}
-
-![График 06](image/20.PNG){ #fig:020 width=70% height=70%}
-
-## Дилатация  
-
-Дилатация (то есть расширение или сжатие) также может быть выполнено путём умножения матриц. Пусть  
-
-$$
-T =
-\left(
-\begin{array}{cc}
-k & 0
-\\ 
-0 & k
-\end{array}
-\right),
-$$  
-
-Тогда матричное произведение $TD$ будет преобразованием дилатации $D$ с коэффициентом $k$. Увеличим граф дома в 2 раза. 
-
-![Програмный код 15](image/21.PNG){ #fig:021 width=70% height=70%}
-
-![График 07](image/22.PNG){ #fig:022 width=70% height=70%}
-
-# Вывод 
-В ходе выполнения данной работы я ознакомилась с некоторыми операциями в среде Octave для решения таких задач, как подгонка полиномиальной кривой, матричных преобразований, вращений, отражений и дилатаций.
+[4] Модель Лотки—Вольтерры: https://math-it.petrsu.ru/users/semenova/MathECO/Lections/Lotka_Volterra.pdf
