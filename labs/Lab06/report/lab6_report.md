@@ -1,21 +1,45 @@
 ---
-# Front matter
-lang: ru-RU
-title: "Научное програмирование"
-subtitle: "Отчет по лабораторной работе № 6"
-author: "Коняева Марина Александровна НФИбд-01-21"
+## Front matter
+title: "Отчёт по лабораторной работе №6
 
-# Formatting
+
+Математическое моделирование"
+subtitle: "Задача об эпидемии. Вариант №55"
+author: "Выполнила: Коняева Марина Александровна, 
+
+
+НФИбд-01-21, 1032217044"
+
+
+
+## Generic otions
+lang: ru-RU
 toc-title: "Содержание"
+
+## Bibliography
+bibliography: bib/cite.bib
+csl: pandoc/csl/gost-r-7-0-5-2008-numeric.csl
+
+## Pdf output format
 toc: true # Table of contents
-toc_depth: 2
+toc-depth: 2
 lof: true # List of figures
 fontsize: 12pt
 linestretch: 1.5
-papersize: a4paper
+papersize: a4
 documentclass: scrreprt
-polyglossia-lang: russian
-polyglossia-otherlangs: english
+## I18n polyglossia
+polyglossia-lang:
+  name: russian
+  options:
+	- spelling=modern
+	- babelshorthands=true
+polyglossia-otherlangs:
+  name: english
+## I18n babel
+babel-lang: russian
+babel-otherlangs: english
+## Fonts
 mainfont: PT Serif
 romanfont: PT Serif
 sansfont: PT Sans
@@ -23,89 +47,284 @@ monofont: PT Mono
 mainfontoptions: Ligatures=TeX
 romanfontoptions: Ligatures=TeX
 sansfontoptions: Ligatures=TeX,Scale=MatchLowercase
-monofontoptions: Scale=MatchLowercase
+monofontoptions: Scale=MatchLowercase,Scale=0.9
+## Biblatex
+biblatex: true
+biblio-style: "gost-numeric"
+biblatexoptions:
+  - parentracker=true
+  - backend=biber
+  - hyperref=auto
+  - language=auto
+  - autolang=other*
+  - citestyle=gost-numeric
+## Pandoc-crossref LaTeX customization
+figureTitle: "Рис."
+tableTitle: "Таблица"
+listingTitle: "Листинг"
+lofTitle: "Список иллюстраций"
+lolTitle: "Листинги"
+## Misc options
 indent: true
-pdf-engine: lualatex
 header-includes:
-  - \linepenalty=10 # the penalty added to the badness of each line within a paragraph (no associated penalty node) Increasing the value makes tex try to have fewer lines in the paragraph.
-  - \interlinepenalty=0 # value of the penalty (node) added after each line of a paragraph.
-  - \hyphenpenalty=50 # the penalty for line breaking at an automatically inserted hyphen
-  - \exhyphenpenalty=50 # the penalty for line breaking at an explicit hyphen
-  - \binoppenalty=700 # the penalty for breaking a line at a binary operator
-  - \relpenalty=500 # the penalty for breaking a line at a relation
-  - \clubpenalty=150 # extra penalty for breaking after first line of a paragraph
-  - \widowpenalty=150 # extra penalty for breaking before last line of a paragraph
-  - \displaywidowpenalty=50 # extra penalty for breaking before last line before a display math
-  - \brokenpenalty=100 # extra penalty for page breaking after a hyphenated line
-  - \predisplaypenalty=10000 # penalty for breaking before a display
-  - \postdisplaypenalty=0 # penalty for breaking after a display
-  - \floatingpenalty = 20000 # penalty for splitting an insertion (can only be split footnote in standard LaTeX)
-  - \raggedbottom # or \flushbottom
+  - \usepackage{indentfirst}
   - \usepackage{float} # keep figures where there are in the text
   - \floatplacement{figure}{H} # keep figures where there are in the text
 ---
 
 # Цель работы
 
-Научиться работать с пределами, последовательностями и рядами, а также научиться писать векторизованный программный код.  
+Изучить и построить модель эпидемии.
+
+# Теоретическое введение. Построение математической модели.
+
+Рассмотрим простейшую модель эпидемии. Предположим, что некая популяция, состоящая из $N$ особей, (считаем, что популяция изолирована) подразделяется на три группы. Первая группа - это восприимчивые к болезни, но пока здоровые особи, обозначим их через $S(t)$. Вторая группа – это число инфицированных особей, которые также при этом являются распространителями инфекции, обозначим их $I(t)$. А третья группа, обозначающаяся через $R(t)$ – это здоровые особи с иммунитетом к болезни. 
+До того, как число заболевших не превышает критического значения $I^*$, считаем, что все больные изолированы и не заражают здоровых. Когда $I(t)> I^*$, тогда инфицирование способны заражать восприимчивых к болезни особей. 
+
+Таким образом, скорость изменения числа $S(t)$ меняется по следующему закону:
+
+$$
+\frac{dS}{dt}=
+ \begin{cases}
+	-\alpha S &\text{,если $I(t) > I^*$}
+	\\   
+	0 &\text{,если $I(t) \leq I^*$}
+ \end{cases}
+$$
+
+Поскольку каждая восприимчивая к болезни особь, которая, в конце концов, заболевает, сама становится инфекционной, то скорость изменения числа инфекционных особей представляет разность за единицу времени между заразившимися и теми, кто уже болеет и лечится, то есть:
+
+$$
+\frac{dI}{dt}=
+ \begin{cases}
+	\alpha S -\beta I &\text{, если $I(t) > I^*$}
+	\\   
+	-\beta I &\text{, если $I(t) \leq I^*$}
+ \end{cases}
+$$
+
+А скорость изменения выздоравливающих особей (при этом приобретающие иммунитет к болезни):
+
+$$\frac{dR}{dt} = \beta I$$
+
+Постоянные пропорциональности $\alpha, \beta$ - это коэффициенты заболеваемости и выздоровления соответственно. Для того, чтобы решения соответствующих уравнений определялось однозначно, необходимо задать начальные условия. Считаем, что на начало эпидемии в момент времени $t=0$ нет особей с иммунитетом к болезни $R(0)=0$, а число инфицированных и восприимчивых к болезни особей $I(0)$ и $S(0)$ соответственно. Для анализа картины протекания эпидемии необходимо рассмотреть два случая:  $I(0) \leq I^*$ и  $I(0)>I^*$
+
+# Задание
+
+**Вариант 55**
+
+На одном острове вспыхнула эпидемия. Известно, что из всех проживающих на острове 
+$(N=9512)$ в момент начала эпидемии $(t=0)$ число заболевших людей 
+(являющихся распространителями инфекции) $I(0)=52$, А число здоровых людей с иммунитетом 
+к болезни $R(0)=32$. Таким образом, число людей восприимчивых к болезни, 
+но пока здоровых, в начальный момент времени $S(0)=N-I(0)-R(0)$.
+Постройте графики изменения числа особей в каждой из трех групп.
+
+Рассмотрите, как будет протекать эпидемия в случае:
+
+1.	$I(0)\leq I^*$
+
+2.	$I(0)>I^*$
+
+# Задачи
+
+Построить графики изменения числа особей в каждой из трех групп $S$, $I$, $R$. Рассмотреть, как будет протекать эпидемия в случаях:
+
+1.	$I(0)\leq I^*$
+
+2.	$I(0)>I^*$
 
 # Выполнение лабораторной работы
 
-## Пределы. Оценка
+## Решение с помощью программ
 
-Определяем с помощью анонимной функции простую функцию. Создаём индексную переменную, возьмём степени 10, и оценим нашу функцию.  
+### Julia
 
-![Пределы код 01](image/01.PNG){ #fig:001 width=50% height=50%} 
+Код программы для случая $I(0) \leq I^*$:
 
-Получим ответ. На следующей фигуре видно, что предел сходится к значению 2.71828.  
+```
+using Plots
+using DifferentialEquations
 
-![Пределы код 02](image/02.PNG){ #fig:002 width=70% height=70%}  
+N = 9512
+I0 = 52 # заболевшие особи
+R0 = 32 # особи с иммунитетом
+S0 = N - I0 - R0 # здоровые, но восприимчивые особи
+alpha = 0.6 # коэффициент заболеваемости
+beta = 0.2 # коэффициент выздоровления
 
-## Частичные суммы 
+#I0 <= I*
+function ode_fn(du, u, p, t)
+    S, I, R = u
+    du[1] = 0
+    du[2] = -beta*u[2]
+    du[3] = beta*I
+end
 
-Определим индексный вектор, а затем вычислим члены. После чего введем последовательность частичных сумм, используя цикл. 
+v0 = [S0, I0, R0]
+tspan = (0.0, 60.0)
+prob = ODEProblem(ode_fn, v0, tspan)
+sol = solve(prob, dtmax = 0.05)
+S = [u[1] for u in sol.u]
+I = [u[2] for u in sol.u]
+R = [u[3] for u in sol.u]
+T = [t for t in sol.t]
+plt = plot(
+  dpi = 600,
+  legend = :topright)
+plot!(
+  plt,
+  T,
+  S,
+  label = "Восприимчивые особи",
+  color = :blue)
+plot!(
+  plt,
+  T,
+  I,
+  label = "Инфицированные особи",
+  color = :green)
+plot!(
+  plt,
+  T,
+  R,
+  label = "Особи с иммунитетом",
+  color = :red)
 
-![Частичные суммы код 01](image/03.PNG){ #fig:003 width=70% height=70%}   
+savefig(plt, "lab06_1.png")
+```
 
-Построенные слагаемые и частичные суммы можно увидеть на следующем русинке:  
+Код программы для случая $I(0)>I^*$:
 
-![Частичные суммы код 02](image/04.PNG){ #fig:004 width=70% height=70%} 
+```
+using Plots
+using DifferentialEquations
 
-## Сумма ряда
-
-Найдём сумму первых 1000 членов гармонического ряда 1/n.
- 
-![Сумма ряда код 01](image/05.PNG){ #fig:005 width=70% height=70%}
-
-## Вычисление интегралов 
-
-Численно посчитаем интеграл.
-
-![Вычисление интегралов код 01](image/06.PNG){ #fig:006 width=70% height=70%}
-
-## Аппроксимирование суммами 
-
-Напишем скрипт для того, чтобы вычислить интеграл по правилу средней точки. Введём код в текстовый файл и назовём его midpoint.m.  
-
-![Аппроксимирование суммами код 01](image/07.PNG){ #fig:007 width=70% height=70%} 
-
-Запустим этот файл в командной строке. 
-
-![Аппроксимирование суммами код 02](image/08.PNG){ #fig:008 width=70% height=70%}  
-
-Теперь напишем векторизованный код, не требующий циклов. Для этого создадим вектор х-координат средних точек.Введём код в текстовый файл и назовём его midpoint_v.m.    
-
-![Аппроксимирование суммами код 03](image/09.PNG){ #fig:009 width=70% height=70%}
-
-Запустим этот файл в командной строке.
-
-![Аппроксимирование суммами код 04](image/10.PNG){ #fig:010 width=70% height=70%}  
-
-Запустив оба кода, можно заметить, что ответы совпадают, однако векторизованный код считает быстрее, так как в нём не использованы циклы, которые значительно замедляют работу программы. 
-
-![Аппроксимирование суммами код 05](image/11.PNG){ #fig:011 width=70% height=70%})  
+N = 9512
+I0 = 52 # заболевшие особи
+R0 = 32 # особи с иммунитетом
+S0 = N - I0 - R0 # здоровые, но восприимчивые особи
+alpha = 0.3 # коэффициент заболеваемости
+beta = 0.1 # коэффициент выздоровления
 
 
+#I0 > I*
+function ode_fn(du, u, p, t)
+    S, I, R = u
+    du[1] = -alpha*u[1]
+    du[2] = alpha*u[1] - beta*u[2]
+    du[3] = beta*I
+end
 
-# Вывод 
-В ходе выполнения данной работы я научилась работать с пределами, последовательностями и рядами, а также научилась писать векторизованный программный код. Более того, удалось определить, что векторизованный код работает намного быстрее, чем код с циклами.
+v0 = [S0, I0, R0]
+tspan = (0.0, 120.0)
+prob = ODEProblem(ode_fn, v0, tspan)
+sol = solve(prob, dtmax=0.05)
+S = [u[1] for u in sol.u]
+I = [u[2] for u in sol.u]
+R = [u[3] for u in sol.u]
+T = [t for t in sol.t]
+
+plt = plot(
+  dpi=600,
+  legend=:right)
+
+plot!(
+  plt,
+  T,
+  S,
+  label="Восприимчивые особи",
+  color=:blue)
+plot!(
+  plt,
+  T,
+  I,
+  label="Инфицированные особи",
+  color=:green)
+plot!(
+  plt,
+  T,
+  R,
+  label="Особи с иммунитетом",
+  color=:red)
+
+
+savefig(plt, "lab06_2.png")
+```
+
+### Результаты работы кода на Julia
+
+![Графики численности особей трех групп S, I, R, построенные на Julia, для случая, когда больные изолированы](image/1.png){ #fig:001 width=70% height=70% }
+
+![Графики численности особей трех групп S, I, R, построенные на Julia, для случая, когда больные могут заражать особей группы S](image/2.png){ #fig:002 width=70% height=70% }
+
+## OpenModelica
+
+Код программы для случая $I(0) \leq I^*$:
+
+```
+model lab06_1
+Real N = 9512;
+Real I;
+Real R;
+Real S;
+Real alpha = 0.4;
+Real beta = 0.2;
+initial equation
+I = 52;
+R = 32;
+S = N - I - R;
+equation
+der(S) = 0;
+der(I) = -beta*I;
+der(R) = beta*I;
+end lab06_1;
+```
+
+Код программы для случая $I(0)>I^*$:
+
+```
+model lab06_2
+Real N = 9512;
+Real I;
+Real R;
+Real S;
+Real alpha = 0.3;
+Real beta = 0.1;
+initial equation
+I = 52;
+R = 32;
+S = N - I - R;
+equation
+der(S) = -alpha*S;
+der(I) = alpha*S - beta*I;
+der(R) = beta*I;
+end lab06_2;
+```
+
+### Результаты работы кода на OpenModelica
+
+![Графики численности особей трех групп S, I, R, построенные на Julia, для случая, когда больные изолированы](image/3.png){ #fig:003 width=70% height=70% }
+
+![Графики численности особей трех групп S, I, R, построенные на Julia, для случая, когда больные могут заражать особей группы S](image/4.png){ #fig:004 width=70% height=70% }
+
+# Анализ полученных результатов. Сравнение языков.
+
+В итоге проделанной работы мы построили графики зависимости численности особей трех групп S, I, R для случаев, когда больные изолированы и когда они могут заражать особей группы S. 
+
+Построение модели эпидемии на языке OpenModelica занимает значительно меньше строк, чем аналогичное построение на Julia. Кроме того, построения на языке OpenModelica проводятся относительно значения времени t по умолчанию, что упрощает нашу работу.
+
+# Вывод
+
+В ходе выполнения лабораторной работы была изучена модель эпидемии и построена модель на языках Julia и Open Modelica.
+
+# Список литературы. Библиография.
+
+
+[1] Документация по Julia: https://docs.julialang.org/en/v1/
+
+[2] Документация по OpenModelica: https://openmodelica.org/
+
+[3] Решение дифференциальных уравнений: https://www.wolframalpha.com/
+
+[4] Конструирование эпидемиологических моделей: https://habr.com/ru/post/551682/
