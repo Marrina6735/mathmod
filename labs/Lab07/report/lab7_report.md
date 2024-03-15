@@ -1,21 +1,45 @@
 ---
-# Front matter
-lang: ru-RU
-title: "Научное програмирование"
-subtitle: "Отчет по лабораторной работе № 7"
-author: "Коняева Марина Александровна НФИбд-01-21"
+## Front matter
+title: "Отчёт по лабораторной работе №7
 
-# Formatting
+
+Математическое моделирование"
+subtitle: "Эффективность рекламы. Вариант №55"
+author: "Выполнила: Коняева Марина Александровна, 
+
+
+НФИбд-01-21, 1032217044"
+
+
+
+## Generic otions
+lang: ru-RU
 toc-title: "Содержание"
+
+## Bibliography
+bibliography: bib/cite.bib
+csl: pandoc/csl/gost-r-7-0-5-2008-numeric.csl
+
+## Pdf output format
 toc: true # Table of contents
-toc_depth: 2
+toc-depth: 2
 lof: true # List of figures
 fontsize: 12pt
 linestretch: 1.5
-papersize: a4paper
+papersize: a4
 documentclass: scrreprt
-polyglossia-lang: russian
-polyglossia-otherlangs: english
+## I18n polyglossia
+polyglossia-lang:
+  name: russian
+  options:
+	- spelling=modern
+	- babelshorthands=true
+polyglossia-otherlangs:
+  name: english
+## I18n babel
+babel-lang: russian
+babel-otherlangs: english
+## Fonts
 mainfont: PT Serif
 romanfont: PT Serif
 sansfont: PT Sans
@@ -23,115 +47,273 @@ monofont: PT Mono
 mainfontoptions: Ligatures=TeX
 romanfontoptions: Ligatures=TeX
 sansfontoptions: Ligatures=TeX,Scale=MatchLowercase
-monofontoptions: Scale=MatchLowercase
+monofontoptions: Scale=MatchLowercase,Scale=0.9
+## Biblatex
+biblatex: true
+biblio-style: "gost-numeric"
+biblatexoptions:
+  - parentracker=true
+  - backend=biber
+  - hyperref=auto
+  - language=auto
+  - autolang=other*
+  - citestyle=gost-numeric
+## Pandoc-crossref LaTeX customization
+figureTitle: "Рис."
+tableTitle: "Таблица"
+listingTitle: "Листинг"
+lofTitle: "Список иллюстраций"
+lolTitle: "Листинги"
+## Misc options
 indent: true
-pdf-engine: lualatex
 header-includes:
-  - \linepenalty=10 # the penalty added to the badness of each line within a paragraph (no associated penalty node) Increasing the value makes tex try to have fewer lines in the paragraph.
-  - \interlinepenalty=0 # value of the penalty (node) added after each line of a paragraph.
-  - \hyphenpenalty=50 # the penalty for line breaking at an automatically inserted hyphen
-  - \exhyphenpenalty=50 # the penalty for line breaking at an explicit hyphen
-  - \binoppenalty=700 # the penalty for breaking a line at a binary operator
-  - \relpenalty=500 # the penalty for breaking a line at a relation
-  - \clubpenalty=150 # extra penalty for breaking after first line of a paragraph
-  - \widowpenalty=150 # extra penalty for breaking before last line of a paragraph
-  - \displaywidowpenalty=50 # extra penalty for breaking before last line before a display math
-  - \brokenpenalty=100 # extra penalty for page breaking after a hyphenated line
-  - \predisplaypenalty=10000 # penalty for breaking before a display
-  - \postdisplaypenalty=0 # penalty for breaking after a display
-  - \floatingpenalty = 20000 # penalty for splitting an insertion (can only be split footnote in standard LaTeX)
-  - \raggedbottom # or \flushbottom
+  - \usepackage{indentfirst}
   - \usepackage{float} # keep figures where there are in the text
   - \floatplacement{figure}{H} # keep figures where there are in the text
 ---
 
 # Цель работы
 
-Научиться строить различные виды графиков: параметрические, неявных функций, в полярных координатах. Обучиться работе с комплексными числами, изображать их на координатной плоскости.  
+Изучить и построить модель эффективности рекламы.
+
+# Теоретическое введение. Построение математической модели.
+
+Организуется рекламная кампания нового товара или услуги. Необходимо, чтобы прибыль будущих продаж с избытком покрывала издержки на рекламу. Вначале расходы могут превышать прибыль, поскольку лишь малая часть потенциальных покупателей будет информирована о новинке. Затем, при увеличении числа продаж, возрастает и прибыль, и, наконец, наступит момент, когда рынок насытиться, и рекламировать товар станет бесполезным.
+
+Предположим, что торговыми учреждениями реализуется некоторая продукция, о которой в момент времени $t$ из числа потенциальных покупателей $N$ знает лишь $n$ покупателей. Для ускорения сбыта продукции запускается реклама по радио, телевидению и других средств массовой информации. После запуска рекламной кампании информация о продукции начнет распространяться среди потенциальных покупателей путем общения друг с другом. Таким образом, после запуска рекламных объявлений скорость изменения числа знающих о продукции людей пропорциональна как числу знающих о товаре покупателей, так и числу покупателей о нем не знающих
+
+Модель рекламной кампании описывается следующими величинами.
+Считаем, что $\frac{dn}{dt}$ - скорость изменения со временем числа потребителей, узнавших о товаре и готовых его купить,
+$t$ - время, прошедшее с начала рекламной кампании,
+$N$ - общее число потенциальных платежеспособных покупателей,
+$n(t)$ - число  уже информированных клиентов.
+Эта величина пропорциональна числу покупателей, еще не знающих о нем, это описывается следующим образом
+$\alpha _1(t)(N-n(t))$, где $\alpha _1>0$ -  характеризует интенсивность рекламной кампании (зависит от затрат на рекламу в данный момент времени).
+Помимо этого, узнавшие о товаре потребители также распространяют полученную информацию среди потенциальных покупателей, не знающих о нем (в этом случае работает т.н. сарафанное радио). Этот вклад в рекламу описывается величиной  $\alpha _2(t)n(t)(N-n(t))$. эта величина увеличивается с увеличением потребителей узнавших о товаре.
+
+Математическая модель распространения рекламы описывается уравнением:
+
+$$\frac{dn}{dt} = (\alpha _1(t) + \alpha _2(t)n(t))(N-n(t))$$
+
+При $\alpha _1(t) >> \alpha _2(t)$ получается модель типа модели Мальтуса, решение которой имеет вид 
+
+![График решения уравнения модели Мальтуса](image/00.PNG){ #fig:0001 width=70% height=70% }
+
+В обратном случае $\alpha _1(t) << \alpha _2(t)$ получаем уравнение логистической кривой
+
+![График логистической кривой](image/000.PNG){ #fig:0002 width=70% height=70% }
+
+# Задание
+
+**Вариант 55**
+
+Постройте график распространения рекламы, математическая модель которой описывается следующим уравнением:
+
+1.	$\frac{dn}{dt} = (0.58 + 0.00008n(t))(N-n(t))$
+2.	$\frac{dn}{dt} = (0.000058 + 0.8n(t))(N-n(t))$
+3.	$\frac{dn}{dt} = (0.58\cos{t} + 0.38\cos{(3t)}  n(t))(N-n(t))$
+
+При этом объем аудитории $N = 1550$, в начальный момент о товаре знает 8 человек.
+
+Для случая 2 определите в какой момент времени скорость распространения рекламы будет иметь максимальное значение.
 
 # Выполнение лабораторной работы
-## Параметрические графики 
 
-В самом начале работы включим журналирование. Построим график трёх периодов циклоиды радиуса 2. Для этого определим параметр как вектор в некотором диапазоне, затем вычислим x и y.
+## Решение с помощью программ
 
-![Параметрические графики 01](image/01.png){ #fig:001 width=50% height=50%}  
- 
-Полученный график : 
+### Julia
 
-![Параметрические графики 02](image/02.png){ #fig:002 width=50% height=50%}   
+Код программы для первого случая $\frac{dn}{dt} = (0.58 + 0.00008n(t))(N-n(t))$:
 
-## Полярные координаты 
+```
+using Plots
+using DifferentialEquations
 
-Графики в полярных координатах строятся аналогичным образом. Построим улитку Паскаля.
+N = 1550
+n0 = 8
 
-![Полярные координаты 01](image/03.PNG){ #fig:003 width=50% height=50%}  
+function ode_fn(du, u, p, t)
+    (n) = u
+    du[1] = (0.58 + 0.00008*u[1])*(N - u[1])
+end
 
-Полученный график:
+v0 = [n0]
+tspan = (0.0, 30.0)
+prob = ODEProblem(ode_fn, v0, tspan)
+sol = solve(prob, dtmax = 0.05)
+n = [u[1] for u in sol.u]
+T = [t for t in sol.t]
 
-![Полярные координаты 02](image/04.PNG){ #fig:004 width=50% height=50%}
+plt = plot(
+  dpi = 600,
+  title = "Эффективность распространения рекламы (1) ",
+  legend = false)
+plot!(
+  plt,
+  T,
+  n,
+  color = :red)
 
-Более того, можно построить данный график в полярных осях.
+savefig(plt, "lab07_1.png")
+```
 
-![Полярные координаты 03](image/05.PNG){ #fig:005 width=50% height=50%}
+Код программы для второго случая $\frac{dn}{dt} = (0.000058 + 0.8n(t))(N-n(t))$:
 
-Полученный график:
+```
+using Plots
+using DifferentialEquations
 
-![Полярные координаты 04](image/06.PNG){ #fig:006 width=50% height=50%}
+N = 1550
+n0 = 8
 
-## Графики неявных функций  
+function ode_fn(du, u, p, t)
+    (n) = u
+    du[1] = (0.000058 + 0.8*u[1])*(N - u[1])
+end
 
-Следует построить неявно определённую функцию с помощью ezplot. Зададим график функции, используя лямбда-функцию.  
+v0 = [n0]
+tspan = (0.0, 0.1)
+prob = ODEProblem(ode_fn, v0, tspan)
+sol = solve(prob)
+n = [u[1] for u in sol.u]
+T = [t for t in sol.t]
 
-![Графики неявных функций   01](image/07.PNG){ #fig:007 width=50% height=50%}  
+max_dn = 0;
+max_dn_t = 0;
+max_dn_n = 0;
+for (i, t) in enumerate(T)
+    if sol(t, Val{1})[1] > max_dn
+        global max_dn = sol(t, Val{1})[1]
+        global max_dn_t = t
+        global max_dn_n = n[i]
+    end
+end
 
-После чего построим ее график.
+plt = plot(
+  dpi = 600,
+  title = "Эффективность распространения рекламы (2) ",
+  legend = false)
+plot!(
+  plt,
+  T,
+  n,
+  color = :red)
+plot!(
+  plt,
+  [max_dn_t],
+  [max_dn_n],
+  seriestype = :scatter,
+  color = :red)
 
-![Графики неявных функций   02](image/08.PNG){ #fig:008 width=50% height=50%} 
+savefig(plt, "lab07_2.png")
+```
 
-Найдём уравнение касательной к некоторой окружности. Сначала построим круг, используя лямбда-функцию. Далее по правилу дифференцирования найдём уравнение касательной и изобразим  ее на графике. 
+Код программы для третьего случая $\frac{dn}{dt} = (0.58\cos{t} + 0.38\cos{(3t)}n(t))(N-n(t))$:
 
-![Графики неявных функций   03](image/09.PNG){ #fig:009 width=50% height=50%}
- 
-Полученный график: 
+```
+using Plots
+using DifferentialEquations
 
-![Графики неявных функций   04](image/10.PNG){ #fig:010 width=50% height=50%} 
+N = 1550
+n0 = 8
 
-## Комплексные числа
+function ode_fn(du, u, p, t)
+    (n) = u
+    du[1] = (0.58 + 0.38*cos(3*t)*u[1])*(N - u[1])
+end
 
-Зададим два комплексных числа и запишем основные арифметические операции с ними: сложение,вычитание,  умножение, деление.  
+v0 = [n0]
+tspan = (0.0, 0.1)
+prob = ODEProblem(ode_fn, v0, tspan)
+sol = solve(prob, dtmax = 0.05)
+n = [u[1] for u in sol.u]
+T = [t for t in sol.t]
 
-![Комплексные числа   01](image/11.PNG){ #fig:011 width=50% height=50%} 
+plt = plot(
+  dpi = 600,
+  title = "Эффективность распространения рекламы (3) ",
+  legend = false)
+plot!(
+  plt,
+  T,
+  n,
+  color = :red)
 
-Построим графики в комплексной плоскости, используя команду compass, используя команды, показанные ниже: 
+savefig(plt, "lab07_3.png")
+```
 
-![Комплексные числа   02](image/12.PNG){ #fig:012 width=50% height=50%} 
+### Результаты работы кода на Julia
 
-Полученный график:
+![График распространения рекламы для первого случая, построенный на языке Julia](image/1.PNG){ #fig:001 width=70% height=70% }
 
-![Комплексные числа   03](image/13.PNG){ #fig:013 width=50% height=50%} 
+![График распространения рекламы для второго случая, построенный на языке Julia](image/2.PNG){ #fig:002 width=70% height=70% }
 
-Иногда мы можем получить странные результаты вывода программы. При вычислении корня третьей степени из -8, мы ожидаем ответ -2, но получаем другое число. Это объясняется тем, что Octave возвращает тот ответ, у которого меньший аргумент. Для того, чтобы получить -2, мы должны использовать команду nthroot. 
+![График распространения рекламы для третьего случая, построенный на языке Julia](image/3.PNG){ #fig:003 width=70% height=70% }
 
-![Комплексные числа   04](image/14.PNG){ #fig:014 width=50% height=50%} 
+## OpenModelica
 
-## Специальные функции  
+Код программы для первого случая $\frac{dn}{dt} = (0.58 + 0.00008n(t))(N-n(t))$:
 
-Построим гамма-функцию Г(х+1) и n! на одном графике.
+```
+model lab07_1
+Real N = 1550;
+Real n;
+initial equation
+n = 8;
+equation
+der(n) = (0.58 + 0.00008*n)*(N-n);
+end lab07_1;
+```
 
-![Специальные функции   01](image/15.PNG){ #fig:015 width=50% height=50%} 
+Код программы для второго случая $\frac{dn}{dt} = (0.000058 + 0.8n(t))(N-n(t))$:
 
-Полученный график:
+```
+model lab07_2
+Real N = 1550;
+Real n;
+initial equation
+n = 8;
+equation
+der(n) = (0.000058 + 0.8*n)*(N-n);
+end lab07_2;
+```
 
-![Специальные функции   02](image/16.PNG){ #fig:016 width=50% height=50%}
+Код программы для третьего случая $\frac{dn}{dt} = (0.58\cos{2t} + 0.38\cos{(3t)}  n(t))(N-n(t))$:
 
-Разделив область значения на отдельные интервалы, можно убрать артефакты вычислений. 
+```
+model lab07_3
+Real N = 1150;
+Real n;
+initial equation
+n = 8;
+equation
+der(n) = (0.58*cos(2*time) + 0.38*cos(6*time)*n)*(N-n);
+end lab07_3;
+```
 
-![Специальные функции   03](image/17.PNG){ #fig:017 width=50% height=50%}
+### Результаты работы кода на OpenModelica
 
-После проведения вышеуказанных действий, построим график.
+![График распространения рекламы для первого случая, построенный с помощью OpenModelica](image/4.PNG){ #fig:004 width=70% height=70% }
 
-![Специальные функции   04](image/18.PNG){ #fig:018 width=50% height=50%}
+![График распространения рекламы для второго случая, построенный с помощью OpenModelica](image/5.PNG){ #fig:005 width=70% height=70% }
 
-# Вывод  
+![График распространения рекламы для третьего случая, построенный с помощью OpenModelica](image/6.PNG){ #fig:006 width=70% height=70% }
 
-В ходе выполнения данной работы я научилась строить различные виды графиков: параметрические, неявных функций, в полярных координатах. Также поработала с комплексными числами, научилась изображать их на координатной плоскости. А также построила гамма-функцию и график факториала. 
+# Анализ полученных результатов. Сравнение языков.
+
+В итоге проделанной работы мы построили графики распространения рекламы для трех случаев на языках Julia и OpenModelica. Построение модели распространения рекламы на языке OpenModelica занимает значительно меньше строк, чем аналогичное построение на Julia. 
+Кроме того, построения на языке OpenModelica проводятся относительно значения времени t по умолчанию, что упрощает нашу работу. 
+
+# Вывод
+
+В ходе выполнения лабораторной работы была изучена модель эффективности рекламы и в дальнейшем построена модель на языках Julia и Open Modelica.
+
+# Список литературы. Библиография.
+
+[1] Документация по Julia: https://docs.julialang.org/en/v1/
+
+[2] Документация по OpenModelica: https://openmodelica.org/
+
+[3] Решение дифференциальных уравнений: https://www.wolframalpha.com/
+
+[4] Мальтузианская модель роста: https://www.stolaf.edu//people/mckelvey/envision.dir/malthus.html
